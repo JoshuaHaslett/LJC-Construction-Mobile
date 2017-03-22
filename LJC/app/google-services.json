@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "199393681634",
+    "firebase_url": "https://jlc-construction.firebaseio.com",
+    "project_id": "jlc-construction",
+    "storage_bucket": "jlc-construction.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:199393681634:android:4d5f662655ed1322",
+        "android_client_info": {
+          "package_name": "com.example.joshua.ljc"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "199393681634-uc75hu9cq5h00l2sh48eqgv0sa00iua4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.joshua.ljc",
+            "certificate_hash": "fe08ca603a5233463baf8ee753f3831c8725ebe5"
+          }
+        },
+        {
+          "client_id": "199393681634-pg2ocut4qua38g73r2ivgv3559r6mq0v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDRvJf0kJnIQeY7AFW-fuPuUs0iOfk-5ZE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "199393681634-pg2ocut4qua38g73r2ivgv3559r6mq0v.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
