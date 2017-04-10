@@ -1,42 +1,31 @@
 package com.example.joshua.ljc;
 
 import android.app.ProgressDialog;
-import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
-import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.joshua.ljc.DataModel.Interfaces.IProject;
 import com.example.joshua.ljc.DataModel.Interfaces.ITestimonial;
-import com.example.joshua.ljc.DataModel.Project;
 import com.example.joshua.ljc.DataModel.Testimonial;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 public class TestimonialsFragment extends Fragment {
     private Toast toast = null;
@@ -53,8 +42,11 @@ public class TestimonialsFragment extends Fragment {
     private ProgressDialog progressDialog;
     private Button confirmationCancel;
     private Button confirmationConfirm;
+    private TextView confirmationTitle;
+    private TextView confirmationDescription;
 
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -75,14 +67,18 @@ public class TestimonialsFragment extends Fragment {
         alertDialogConfirmation = rootView.findViewById(R.id.testimonials_DialogueContainer_RelativeLayout);
         confirmationCancel = (Button) alertDialogConfirmation.findViewById(R.id.confirmationDialog_Cancel_Button);
         confirmationConfirm = (Button) alertDialogConfirmation.findViewById(R.id.confirmationDialog_Confirm_Button);
+        confirmationTitle = (TextView) alertDialogConfirmation.findViewById(R.id.confirmationDialog_Title_TextView);
+        confirmationDescription = (TextView) alertDialogConfirmation.findViewById(R.id.confirmationDialog_Description_TextView);
+
+        confirmationTitle.setText("Remove testimonial");
 
         confirmationCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 alertDialogConfirmation.setVisibility(View.INVISIBLE);
+                ((MainMenuActivity) getActivity()).showFab();
             }
         });
-
         return rootView;
     }
 
@@ -176,7 +172,11 @@ public class TestimonialsFragment extends Fragment {
                                     postRef.setValue(testimonial).addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
-                                            testimonial.setUUID(postRef.getKey());
+                                            try {
+                                                testimonial.setUUID(postRef.getKey());
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                            }
                                             adaptor.add(testimonial);
                                             adaptor.notifyDataSetChanged();
                                             toast.setText("You added the testimonial by: " + testimonial.getName());
@@ -224,7 +224,11 @@ public class TestimonialsFragment extends Fragment {
                                     postRef.setValue(testimonial).addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
-                                            testimonial.setUUID(oldTestimonial.getUUID());
+                                            try {
+                                                testimonial.setUUID(oldTestimonial.getUUID());
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                            }
                                             adaptor.removeTestimonial(oldTestimonial);
                                             adaptor.remove(oldTestimonial);
                                             adaptor.add(testimonial);
@@ -303,24 +307,35 @@ public class TestimonialsFragment extends Fragment {
     }
 
     public void removeTestimonial(final ITestimonial rowTestimonial) {
-        DatabaseReference removeRef = mDatabaseReference.child(rowTestimonial.getUUID());
-        removeRef.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+        alertDialogConfirmation.setVisibility(View.VISIBLE);
+        ((MainMenuActivity) getActivity()).hideFab();
+        confirmationDescription.setText("Are you sure you want to remove the testimonial by " + rowTestimonial.getName()+"?");
+        confirmationConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onSuccess(Void aVoid) {
-                toast.setText("" + rowTestimonial.getName() + "'s testimonial was removed.");
-                toast.show();
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.i("Testimonial", "Unsuccessful removal of testimonial.");
-                toast.setText("Unable to remove testimonial.");
-                toast.show();
+            public void onClick(View v) {
+                DatabaseReference removeRef = mDatabaseReference.child(rowTestimonial.getUUID());
+                removeRef.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        toast.setText("" + rowTestimonial.getName() + "'s testimonial was removed.");
+                        toast.show();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.i("Testimonial", "Unsuccessful removal of testimonial.");
+                        toast.setText("Unable to remove testimonial.");
+                        toast.show();
+                    }
+                });
+                adaptor.deleteTestimonialFromList(rowTestimonial);
+                adaptor.remove(rowTestimonial);
+                adaptor.notifyDataSetChanged();
+                alertDialogConfirmation.setVisibility(View.INVISIBLE);
+                ((MainMenuActivity) getActivity()).showFab();
             }
         });
 
-        adaptor.remove(rowTestimonial);
-        adaptor.notifyDataSetChanged();
     }
 }
 

@@ -14,4 +14,5 @@
     <color name="colorSeeThroughDarkBlue">#d900007c</color>
     <color name="colorSeeThroughBlack">#b8000000</color>
     <color name="colorAddGreen">#5cff54</color>
+    <color name="colorSeeThrough">#00ffffff</color>
 </resources>

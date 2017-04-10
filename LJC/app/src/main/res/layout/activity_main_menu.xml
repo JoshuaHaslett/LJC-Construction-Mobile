@@ -59,7 +59,20 @@
         android:background="@drawable/search_container"
         android:paddingBottom="5dp"
         android:layout_alignParentBottom="true"
+        android:descendantFocusability="beforeDescendants"
+        android:focusableInTouchMode="true"
         >
+
+        <ImageButton
+            android:id="@+id/logout_ImageButton"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_logout_32dp"
+            android:tint="@color/colorWhite"
+            android:background="@null"
+            android:layout_weight="3"
+            android:layout_marginLeft="10dp"/>
+
         <EditText
             android:id="@+id/search_EditText"
             android:layout_width="match_parent"
@@ -76,7 +89,8 @@
             android:paddingRight="10dp"
             android:maxLength="8"
             android:singleLine="true"
-            android:textSize="20dp"/>
+            android:textSize="20dp"
+            />
 
         <ImageButton
             android:id="@+id/search_ImageButton"
@@ -85,7 +99,8 @@
             android:src="@drawable/ic_search_black_48dp"
             android:tint="@color/colorWhite"
             android:background="@null"
-            android:layout_weight="4"/>
+            android:layout_weight="3"
+            android:layout_marginRight="10dp"/>
 
     </LinearLayout>
     </RelativeLayout>

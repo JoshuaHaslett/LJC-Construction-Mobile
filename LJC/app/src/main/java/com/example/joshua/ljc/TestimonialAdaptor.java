@@ -124,7 +124,7 @@ public class TestimonialAdaptor extends ArrayAdapter {
             @Override
             public void onClick(View v) {
                 fragment.removeTestimonial(rowTestimonial);
-                testimonialList.remove(rowTestimonial);
+
             }
         });
 
@@ -146,6 +146,10 @@ public class TestimonialAdaptor extends ArrayAdapter {
             Log.i("cleanAll",ex.getMessage());
             return false;
         }
+    }
+
+    public void deleteTestimonialFromList(ITestimonial oldTestimonial){
+        testimonialList.remove(oldTestimonial);
     }
 
     public void removeTestimonial(ITestimonial oldTestimonial) {

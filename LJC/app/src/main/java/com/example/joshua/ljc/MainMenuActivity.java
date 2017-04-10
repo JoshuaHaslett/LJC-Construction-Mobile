@@ -1,6 +1,7 @@
 package com.example.joshua.ljc;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
@@ -15,6 +16,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Toast;
+
+import com.google.firebase.auth.FirebaseAuth;
 
 public class MainMenuActivity extends AppCompatActivity {
 
@@ -37,19 +41,25 @@ public class MainMenuActivity extends AppCompatActivity {
     private ProjectsFragment projectsFragment;
     private TestimonialsFragment testimonialsFragment;
     private FloatingActionButton fab;
+    private ImageButton logoutImageButton;
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthorisationListener;
+    private Toast toast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
-
+        mAuth = FirebaseAuth.getInstance();
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
         final TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
+        toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
         searchEditText = (EditText) findViewById(R.id.search_EditText);
         searchImageButton = (ImageButton) findViewById(R.id.search_ImageButton);
+        logoutImageButton = (ImageButton) findViewById(R.id.logout_ImageButton);
         searchImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -61,6 +71,25 @@ public class MainMenuActivity extends AppCompatActivity {
                         testimonialsFragment.loadTestimonials(searchEditText.getText().toString());
                         break;
                 }
+            }
+        });
+
+        mAuthorisationListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                if (firebaseAuth.getCurrentUser() == null) {
+                    startActivity(new Intent(MainMenuActivity.this, LoginActivity.class));
+                    finish();
+                    toast.setText("You've successfully logged out.");
+                    toast.show();
+                }
+            }
+        };
+
+        logoutImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mAuth.signOut();
             }
         });
 
@@ -129,5 +158,11 @@ public class MainMenuActivity extends AppCompatActivity {
 
     public void showFab(){
         fab.show();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(mAuthorisationListener);
     }
 }

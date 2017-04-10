@@ -1,11 +1,14 @@
 package com.example.joshua.ljc;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -37,104 +40,63 @@ import java.util.HashMap;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private ImageButton googleSignInBtn;
+    private com.google.android.gms.common.SignInButton googleSignInBtn;
     private static final int RC_SIGN_IN = 0;
     private GoogleApiClient googleApiClient;
     private FirebaseAuth authentication;
     private static final String TAG = "LoginActivity Activity";
     private FirebaseAuth.AuthStateListener authorisationListener;
     private DatabaseReference database;
-    private StorageReference mStorage;
+    private Toast toast;
+    private ProgressDialog progressDialog;
+    private View userGuide;
+    private Button closeGuide;
+    private ImageButton informationButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);;
         setContentView(R.layout.activity_login);
-        mStorage = FirebaseStorage.getInstance().getReference();
-        //Initialise variables
+        progressDialog = new ProgressDialog(this);
         database = FirebaseDatabase.getInstance().getReference().child("Users");
         authentication = FirebaseAuth.getInstance();
+        userGuide = findViewById(R.id.guide_alertDialogue);
+        closeGuide = (Button) userGuide.findViewById(R.id.guideDialog_Confirm_Button);
+        informationButton = (ImageButton) findViewById(R.id.information_ImageButton);
+        toast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
         authorisationListener = new FirebaseAuth.AuthStateListener(){
 
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 if(firebaseAuth.getCurrentUser() != null){
                     final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-                    database.child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot snapshot) {
-                            if (snapshot.exists()) {
-                                // TODO: handle the case where the data already exists
-                            }
-                            else {
-
-                                //create display picture
-                                HashMap<String, String> dataMap = new HashMap<String, String>();
-                                Calendar c = Calendar.getInstance();
-                                SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
-                                String formattedDate = df.format(c.getTime());
-                                dataMap.put("Name", user.getDisplayName());
-                                dataMap.put("UUID", user.getUid());
-                                dataMap.put("JoinDate", formattedDate);
-
-                                database.child(user.getUid()).setValue(dataMap).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        if (task.isSuccessful()) {
-                                            Toast.makeText(LoginActivity.this, "Welcome.", Toast.LENGTH_LONG).show();
-                                        } else {
-                                            Toast.makeText(LoginActivity.this, "Error.", Toast.LENGTH_LONG).show();
-                                        }
-                                    }
-
-                                });
-                                database.child(user.getUid()).child("TotalFollowers").setValue(0).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        if (task.isSuccessful()) {
-                                            Toast.makeText(LoginActivity.this, "Welcome.", Toast.LENGTH_LONG).show();
-                                        } else {
-                                            Toast.makeText(LoginActivity.this, "Error.", Toast.LENGTH_LONG).show();
-                                        }
-                                    }
-
-                                });
-                                database.child(user.getUid()).child("TotalLeaders").setValue(0).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        if (task.isSuccessful()) {
-                                            Toast.makeText(LoginActivity.this, "Welcome.", Toast.LENGTH_LONG).show();
-                                        } else {
-                                            Toast.makeText(LoginActivity.this, "Error.", Toast.LENGTH_LONG).show();
-                                        }
-                                    }
-
-                                });
-
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-
-                    });
-
-
-                       // store new uuid of user in Firebase
-
-
-                    startActivity(new Intent(LoginActivity.this, MainMenuActivity.class));
-
-
+                    if (authentication.getCurrentUser().getUid().equals("4LjgxfVwYoWGevl4MOBl8jLjRX52")) {
+                        startActivity(new Intent(LoginActivity.this, MainMenuActivity.class));
+                    }else{
+                        toast.setText("You don't have permission to access this application.");
+                        toast.show();
+                    }
+                    progressDialog.hide();
                 }
             }
         };
 
+        informationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                userGuide.setVisibility(View.VISIBLE);
+            }
+        });
+
+        closeGuide.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                userGuide.setVisibility(View.INVISIBLE);
+            }
+        });
+
         //Initialise interface
-        googleSignInBtn = (ImageButton) findViewById(R.id.google_Button);
+        googleSignInBtn = (com.google.android.gms.common.SignInButton) findViewById(R.id.google_Button);
 
         // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -175,7 +137,9 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
+        progressDialog.setTitle("LJC Construction administration application.");
+        progressDialog.setMessage("Retrieving data...");
+        progressDialog.show();
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
@@ -184,8 +148,7 @@ public class LoginActivity extends AppCompatActivity {
                 GoogleSignInAccount account = result.getSignInAccount();
                 firebaseAuthWithGoogle(account);
             } else {
-                // Google Sign In failed, update UI appropriately
-                // ...
+                progressDialog.hide();
             }
         }
     }
