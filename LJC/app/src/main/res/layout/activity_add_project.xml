@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.joshua.ljc.AddProjectActivity"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+
+
+    <LinearLayout
+        android:id="@+id/filter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@color/colorBlack">
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            >
+            <CheckBox
+                android:id="@+id/addProject_NewBuilds_CheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:background="@drawable/new_build_check_box"
+                android:button="@null"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp">
+            <CheckBox
+                android:id="@+id/addProject_Extensions_CheckBox"
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:background="@drawable/extensions_check_box"
+                android:button="@null"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp">
+            <CheckBox
+                android:id="@+id/addProject_Refurbishments_CheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:background="@drawable/refurbishments_check_box"
+                android:button="@null"/>
+        </RelativeLayout>
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/addProject_Name_TextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/filter"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"
+        android:fontFamily="serif"
+        android:text="@string/project_title"
+        android:textAlignment="center"
+        android:textColor="@color/colorBlack"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+
+        <EditText
+            android:id="@+id/addProject_Name_EditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:hint="@string/project_name"
+            android:maxLength="30"
+            android:layout_below="@+id/addProject_Name_TextView"
+            android:layout_alignParentStart="true"
+            android:layout_marginRight="20dp"
+            android:background="@null"
+
+            android:layout_marginLeft="20dp"
+            android:nextFocusDown="@+id/addProject_Description_TextView"
+            android:layout_marginBottom="5dp"/>
+    <ImageView
+        android:id="@+id/type_Separator"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/colorGrey"
+        android:layout_below="@id/addProject_Name_EditText"
+        android:layout_marginRight="15dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginBottom="5dp"
+        />
+
+    <TextView
+        android:id="@id/addProject_Description_TextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/type_Separator"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"
+        android:fontFamily="serif"
+        android:text="@string/project_details"
+        android:textAlignment="center"
+        android:textColor="@color/colorBlack"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:imeOptions="actionUnspecified"/>
+
+        <EditText
+            android:id="@+id/addProject_Description_EditText"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="@string/project_description"
+            android:maxLines="20"
+            android:maxLength="1000"
+            android:nextFocusDown="@null"
+            android:background="@null"
+            android:layout_below="@id/addProject_Description_TextView"
+            android:layout_above="@+id/description_Separator"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:gravity="top|left"
+            />
+
+    <ImageView
+        android:id="@id/description_Separator"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/colorGrey"
+        android:layout_marginRight="15dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginBottom="5dp"
+        android:layout_above="@+id/addProject_Picture_ImageButton"
+        />
+
+    <ImageButton
+        android:id="@id/addProject_Picture_ImageButton"
+        android:layout_width="match_parent"
+        android:layout_height="270dp"
+        android:src="@drawable/ic_add_a_photo_black_60dp"
+        android:layout_above="@+id/addProject_Actions_LinearLayout"
+        android:layout_alignParentStart="true"
+        android:layout_marginRight="15dp"
+        android:layout_marginLeft="15dp"/>
+
+    <LinearLayout
+        android:id="@id/addProject_Actions_LinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@color/colorBlack"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:layout_alignParentBottom="true"
+        >
+
+        <ImageButton
+            android:id="@+id/addProject_Cancel_ImageButton"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/ic_cancel_black_24dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginLeft="10dp"
+            android:backgroundTint="@color/colorLightRed"
+            />
+
+        <ImageButton
+            android:id="@+id/addProject_Add_ImageButton"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/ic_check_circle_black_24dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="5dp"
+            android:backgroundTint="@color/colorAddGreen"
+            />
+
+    </LinearLayout>
+
+    <include layout="@layout/alert_dialogue_confirmation" android:visibility="invisible" android:id="@+id/addProject_DialogueContainer_RelativeLayout"/>
+
+
+</RelativeLayout>

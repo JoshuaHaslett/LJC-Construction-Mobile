@@ -1,0 +1,15 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+    <ListView
+        android:id="@+id/testimonials_ListView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+    </ListView>
+
+    <include layout="@layout/alert_dialogue_testimonials" android:visibility="invisible" android:id="@+id/alertDialogContainer"/>
+    <include layout="@layout/alert_dialogue_confirmation" android:visibility="invisible" android:id="@+id/testimonials_DialogueContainer_RelativeLayout"/>
+
+</RelativeLayout>
