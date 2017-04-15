@@ -1,9 +1,12 @@
 package com.example.joshua.ljc;
 
+import android.*;
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -49,7 +52,9 @@ public class AddProjectActivity extends AppCompatActivity {
     private ImageButton addImageButton;
     private Toast toast;
     private final int MY_READ_EXTERNAL_STORAGE = 1;
+    private final int MY_CAMERA = 3;
     private static final int GALLERY_INTENT = 2;
+    private  final int CAMERA_INTENT = 4;
     private Uri uri;
     private StorageReference mStorage;
     private DatabaseReference mDatabaseReference;
@@ -162,9 +167,12 @@ public class AddProjectActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_PICK);
+                /*Intent intent = new Intent(Intent.ACTION_PICK);
                 intent.setType("image/*");
-                startActivityForResult(intent, GALLERY_INTENT);
+                startActivityForResult(intent, GALLERY_INTENT);*/
+
+                Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(cameraIntent, CAMERA_INTENT);
             }
         });
 
@@ -235,6 +243,16 @@ public class AddProjectActivity extends AppCompatActivity {
                 pictureImageButton.setImageURI(uri);
             }
 
+        }else if (requestCode == CAMERA_INTENT && resultCode == RESULT_OK) {
+            uri = data.getData();
+            if (uri != null) {
+                // Get the path from the Uri
+                String path = getPathFromURI(uri);
+                Log.i(TAG, "Image Path : " + path);
+                // Set the image in ImageView
+                pictureImageButton.setScaleType(ImageView.ScaleType.FIT_XY);
+                pictureImageButton.setImageURI(uri);
+            }
         }
     }
 
@@ -258,6 +276,13 @@ public class AddProjectActivity extends AppCompatActivity {
                     new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE},
                     MY_READ_EXTERNAL_STORAGE);
         }
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{android.Manifest.permission.CAMERA},
+                    MY_CAMERA);
+        }
 
         return true;
     }
@@ -269,13 +294,27 @@ public class AddProjectActivity extends AppCompatActivity {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                        requestPermission();
                     }
-                    //do nothing
                 } else {
                     toast.setText("Please give permission for reading external storage.");
                     toast.show();
                     onBackPressed();
                 }
+                break;
+            }
+            case MY_CAMERA: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                        requestPermission();
+                    }
+                } else {
+                    toast.setText("Please give permission for reading external storage.");
+                    toast.show();
+                    onBackPressed();
+                }
+                break;
             }
         }
     }

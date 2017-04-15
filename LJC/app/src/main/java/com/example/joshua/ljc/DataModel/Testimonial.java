@@ -103,8 +103,8 @@ public class Testimonial implements ITestimonial {
         if (authorQuote == null) {
             throw new Exception("Please enter the quote given by the client. This cannot be left empty.");
         }
-        if (authorQuote.length() < 3 || authorQuote.length() > 300) {
-            throw new Exception("The clients quote must be between 8-300 characters in length.");
+        if (authorQuote.length() < 10 || authorQuote.length() > 1000) {
+            throw new Exception("The clients quote must be between 10-1000 characters in length.");
         }
         authorQuote = authorQuote.substring(0, 1).toUpperCase() + authorQuote.substring(1);
         quote = authorQuote;

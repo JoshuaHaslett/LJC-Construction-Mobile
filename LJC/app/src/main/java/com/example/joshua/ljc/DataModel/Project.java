@@ -79,8 +79,8 @@ public class Project implements IProject {
 
     @Override
     public void setDescription(String info) throws Exception {
-        if (info.length() < 20 || info.length() > 1000) {
-            throw new Exception("The project description must be between 20 and 1000 characters in length.");
+        if (info.length() < 20 || info.length() > 3000) {
+            throw new Exception("The project description must be between 20 and 3000 characters in length.");
         }
         info = info.substring(0, 1).toUpperCase() + info.substring(1);
         this.description = info;
