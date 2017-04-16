@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -14,6 +15,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -37,6 +39,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 
 import static android.content.ContentValues.TAG;
 
@@ -68,6 +73,7 @@ public class AddProjectActivity extends AppCompatActivity {
     private Button dialogConfirm;
     private TextView dialogTitle;
     private TextView dialogDescription;
+    private byte[] byteArray;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -167,12 +173,11 @@ public class AddProjectActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                /*Intent intent = new Intent(Intent.ACTION_PICK);
-                intent.setType("image/*");
-                startActivityForResult(intent, GALLERY_INTENT);*/
 
-                Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(cameraIntent, CAMERA_INTENT);
+                Intent intent = new Intent(Intent.ACTION_PICK);
+                intent.setType("image/*");
+                startActivityForResult(intent, GALLERY_INTENT);
+
             }
         });
 
@@ -241,9 +246,14 @@ public class AddProjectActivity extends AppCompatActivity {
                 // Set the image in ImageView
                 pictureImageButton.setScaleType(ImageView.ScaleType.FIT_XY);
                 pictureImageButton.setImageURI(uri);
-            }
 
-        }else if (requestCode == CAMERA_INTENT && resultCode == RESULT_OK) {
+                //if (path.contains(""))
+                Bitmap bmp = BitmapFactory.decodeFile(path);
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                bmp.compress(Bitmap.CompressFormat.JPEG, 50, stream);
+                byteArray = stream.toByteArray();
+            }
+        } else if (requestCode == CAMERA_INTENT && resultCode == RESULT_OK) {
             uri = data.getData();
             if (uri != null) {
                 // Get the path from the Uri
@@ -255,6 +265,8 @@ public class AddProjectActivity extends AppCompatActivity {
             }
         }
     }
+
+
 
     public String getPathFromURI(Uri contentUri) {
         String res = null;
@@ -346,7 +358,7 @@ public class AddProjectActivity extends AppCompatActivity {
                     DatabaseReference postRef = mDatabaseReference.child(projectType).child(updatedProject.getUUID());
                     postRef.setValue(updatedProject);
                     StorageReference filePath = mStorage.child("images").child(updatedProject.getImage());
-                    filePath.putFile(uri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                    filePath.putBytes(byteArray).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                             progressDialog.hide();
@@ -369,7 +381,7 @@ public class AddProjectActivity extends AppCompatActivity {
                     IProject project = new Project(nameEditText.getText().toString(), descriptionEditText.getText().toString(), postRef.getKey());
                     postRef.setValue(project);
                     StorageReference filePath = mStorage.child("images").child(postRef.getKey());
-                    filePath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    filePath.putBytes(byteArray).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                             finish();
@@ -397,5 +409,7 @@ public class AddProjectActivity extends AppCompatActivity {
         }
         return true;
     }
+
+
 
 }
