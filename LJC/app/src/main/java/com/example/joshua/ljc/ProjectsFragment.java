@@ -2,7 +2,9 @@ package com.example.joshua.ljc;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -49,12 +51,15 @@ public class ProjectsFragment extends Fragment {
     private Button dialogConfirm;
     private TextView dialogTitle;
     private TextView dialogDescription;
+    private TextView noResultsTextView;
+    private Toast countToast;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_projects, container, false);
         toast = Toast.makeText(getActivity(), "", Toast.LENGTH_SHORT);
+        countToast = Toast.makeText(getActivity(), "", Toast.LENGTH_SHORT);
         newBuildsCheckBox = (CheckBox) rootView.findViewById(R.id.projects_NewBuilds_CheckBox);
         extensionsCheckBox = (CheckBox) rootView.findViewById(R.id.projects_Extensions_CheckBox);
         refurbishmentsCheckBox = (CheckBox) rootView.findViewById(R.id.projects_Refurbishments_CheckBox);
@@ -67,6 +72,7 @@ public class ProjectsFragment extends Fragment {
         dialogConfirm = (Button) confirmationDialogContainer.findViewById(R.id.confirmationDialog_Confirm_Button);
         dialogTitle = (TextView) confirmationDialogContainer.findViewById(R.id.confirmationDialog_Title_TextView);
         dialogDescription = (TextView) confirmationDialogContainer.findViewById(R.id.confirmationDialog_Description_TextView);
+        noResultsTextView = (TextView) rootView.findViewById(R.id.projects_NoResults_TextView);
         projectsListView.setAdapter(newBuildAdaptor);
         newBuildsCheckBox.setChecked(true);
         newBuildsCheckBox.setEnabled(false);
@@ -164,13 +170,21 @@ public class ProjectsFragment extends Fragment {
                         e.printStackTrace();
                     }
                 }
-
+                ((MainMenuActivity)getContext()).enableSearch();
                 progressDialog.hide();
+                if (dataSnapshot.getChildrenCount() < 1){
+                    noResultsTextView.setVisibility(View.VISIBLE);
+                }else{
+                    noResultsTextView.setVisibility(View.GONE);
+                }
+                countToast.setText("Projects returned: "+dataSnapshot.getChildrenCount());
+                countToast.show();
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 progressDialog.hide();
+                ((MainMenuActivity)getContext()).enableSearch();
             }
         });
     }
@@ -242,16 +256,25 @@ public class ProjectsFragment extends Fragment {
                                             newBuildAdaptor.deleteProject(project);
                                             newBuildAdaptor.remove(project);
                                             newBuildAdaptor.notifyDataSetChanged();
+                                            if (newBuildAdaptor.getCount() < 1){
+                                                noResultsTextView.setVisibility(View.VISIBLE);
+                                            }
                                             break;
                                         case "Extensions":
                                             extensionAdaptor.deleteProject(project);
                                             extensionAdaptor.remove(project);
                                             extensionAdaptor.notifyDataSetChanged();
+                                            if (extensionAdaptor.getCount() < 1){
+                                                noResultsTextView.setVisibility(View.VISIBLE);
+                                            }
                                             break;
                                         case "Refurbishments":
                                             refurbishmentAdaptor.deleteProject(project);
                                             refurbishmentAdaptor.remove(project);
                                             refurbishmentAdaptor.notifyDataSetChanged();
+                                            if (refurbishmentAdaptor.getCount() < 1){
+                                                noResultsTextView.setVisibility(View.VISIBLE);
+                                            }
                                     }
                                     progressDialog.hide();
                                 }
@@ -269,7 +292,6 @@ public class ProjectsFragment extends Fragment {
                             toast.show();
                             progressDialog.hide();
                         }
-
                     }
                 });
             }
@@ -281,6 +303,7 @@ public class ProjectsFragment extends Fragment {
         super.onResume();
         loadProjects("");
     }
+
 }
 
 

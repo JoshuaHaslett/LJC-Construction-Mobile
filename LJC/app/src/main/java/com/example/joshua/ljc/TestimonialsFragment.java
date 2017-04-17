@@ -1,8 +1,10 @@
 package com.example.joshua.ljc;
 
 import android.app.ProgressDialog;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
@@ -44,14 +46,18 @@ public class TestimonialsFragment extends Fragment {
     private Button confirmationConfirm;
     private TextView confirmationTitle;
     private TextView confirmationDescription;
+    private TextView noResultsTextView;
+    private Toast countToast;
+    private View rootView;
 
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_testimonials, container, false);
+        rootView = inflater.inflate(R.layout.fragment_testimonials, container, false);
         toast = Toast.makeText(getActivity(), "", Toast.LENGTH_SHORT);
+        countToast = Toast.makeText(getActivity(), "", Toast.LENGTH_SHORT);
         testimonialsListView = (ListView) rootView.findViewById(R.id.testimonials_ListView);
         adaptor = new TestimonialAdaptor(getContext(), R.layout.listview_testimonials, true, this);
         testimonialsListView.setAdapter(adaptor);
@@ -64,6 +70,7 @@ public class TestimonialsFragment extends Fragment {
         clientsQuoteEditText = (EditText) rootView.findViewById(R.id.testimonialDialog_Quote_EditText);
         cancelButton = (Button) rootView.findViewById(R.id.testimonialDialog_Cancel_Button);
         addButton = (Button) rootView.findViewById(R.id.testimonialDialog_Add_Button);
+        noResultsTextView = (TextView) rootView.findViewById(R.id.testimonials_NoResults_TextView);
         alertDialogConfirmation = rootView.findViewById(R.id.testimonials_DialogueContainer_RelativeLayout);
         confirmationCancel = (Button) alertDialogConfirmation.findViewById(R.id.confirmationDialog_Cancel_Button);
         confirmationConfirm = (Button) alertDialogConfirmation.findViewById(R.id.confirmationDialog_Confirm_Button);
@@ -103,11 +110,20 @@ public class TestimonialsFragment extends Fragment {
                     parseTestimonial(child);
                 }
                 progressDialog.hide();
+                ((MainMenuActivity)getContext()).enableSearch();
+                if (dataSnapshot.getChildrenCount() < 1){
+                    noResultsTextView.setVisibility(View.VISIBLE);
+                }else{
+                    noResultsTextView.setVisibility(View.GONE);
+                }
+                countToast.setText("Testimonials returned: "+dataSnapshot.getChildrenCount());
+                countToast.show();
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 progressDialog.hide();
+                ((MainMenuActivity)getContext()).enableSearch();
             }
         });
     }
@@ -178,6 +194,7 @@ public class TestimonialsFragment extends Fragment {
                                                 e.printStackTrace();
                                             }
                                             adaptor.add(testimonial);
+                                            noResultsTextView.setVisibility(View.GONE);
                                             adaptor.notifyDataSetChanged();
                                             toast.setText("You added the testimonial by: " + testimonial.getName());
                                             toast.show();
@@ -333,9 +350,13 @@ public class TestimonialsFragment extends Fragment {
                 adaptor.notifyDataSetChanged();
                 alertDialogConfirmation.setVisibility(View.INVISIBLE);
                 ((MainMenuActivity) getActivity()).showFab();
+                if (adaptor.getCount() < 1){
+                    noResultsTextView.setVisibility(View.VISIBLE);
+                }
             }
         });
 
     }
+
 }
 

@@ -68,5 +68,8 @@ These details can be altered and confirmed similarly to how testimonials are cre
 To remove a testimonial, you will again need to locate the testimonial via either scrolling through the list view, and/or using the substring search at the bottom of the page. Once found, simply select the red removal icon in the top right corner of the entries cell (on the right of the blue pencil icon). This will prompt a pop-up to appear requesting your approval of the testimonials removal. Selecting cancel at this stage will remove the pop-up and re-enable the list view. Selecting the confirmation button will close the pop-up whilst removing the selected testimonial from the list view. A text message will appear confirming the testimonials removal (assuming its successfully removed from the database).
 \n\nAdditional information:\n\n
 This user guide was last updated on the 11th April 2017, and was written by the applications author Joshua Haslett. Please report any issues (bugs/crashes etc.) to the author at haslett.j.l@gmail.com. Please direct any further questions regarding how to operate this application, to the above email address.
-</string>
+
+    </string>
+    <string name="no_projects_returned">No projects returned.</string>
+    <string name="no_testimonials_returned">No testimonials returned.</string>
 </resources>

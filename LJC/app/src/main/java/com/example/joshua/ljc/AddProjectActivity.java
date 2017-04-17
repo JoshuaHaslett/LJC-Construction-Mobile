@@ -59,7 +59,7 @@ public class AddProjectActivity extends AppCompatActivity {
     private final int MY_READ_EXTERNAL_STORAGE = 1;
     private final int MY_CAMERA = 3;
     private static final int GALLERY_INTENT = 2;
-    private  final int CAMERA_INTENT = 4;
+    private final int CAMERA_INTENT = 4;
     private Uri uri;
     private StorageReference mStorage;
     private DatabaseReference mDatabaseReference;
@@ -74,6 +74,7 @@ public class AddProjectActivity extends AppCompatActivity {
     private TextView dialogTitle;
     private TextView dialogDescription;
     private byte[] byteArray;
+    private boolean imageChanged;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -192,10 +193,10 @@ public class AddProjectActivity extends AppCompatActivity {
         addImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (updating){
+                if (updating) {
                     dialogTitle.setText("Confirm project update");
                     dialogDescription.setText("Are you sure you want to update the project: " + nameEditText.getText().toString());
-                }else{
+                } else {
                     dialogTitle.setText("Confirm project creation");
                     dialogDescription.setText("Are you sure you want to post the project: " + nameEditText.getText().toString());
                 }
@@ -231,7 +232,7 @@ public class AddProjectActivity extends AppCompatActivity {
                 }
             });
         }
-
+        imageChanged = false;
     }
 
     @Override
@@ -246,12 +247,11 @@ public class AddProjectActivity extends AppCompatActivity {
                 // Set the image in ImageView
                 pictureImageButton.setScaleType(ImageView.ScaleType.FIT_XY);
                 pictureImageButton.setImageURI(uri);
-
-                //if (path.contains(""))
                 Bitmap bmp = BitmapFactory.decodeFile(path);
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                 bmp.compress(Bitmap.CompressFormat.JPEG, 50, stream);
                 byteArray = stream.toByteArray();
+                imageChanged = true;
             }
         } else if (requestCode == CAMERA_INTENT && resultCode == RESULT_OK) {
             uri = data.getData();
@@ -265,7 +265,6 @@ public class AddProjectActivity extends AppCompatActivity {
             }
         }
     }
-
 
 
     public String getPathFromURI(Uri contentUri) {
@@ -358,21 +357,35 @@ public class AddProjectActivity extends AppCompatActivity {
                     DatabaseReference postRef = mDatabaseReference.child(projectType).child(updatedProject.getUUID());
                     postRef.setValue(updatedProject);
                     StorageReference filePath = mStorage.child("images").child(updatedProject.getImage());
-                    filePath.putBytes(byteArray).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                            progressDialog.hide();
-                            toast.setText("You updated: " + updatedProject.getName());
-                            toast.show();
-                            finish();
-                            onBackPressed();
-                        }
-                    });
+                    if (imageChanged) {
+                        filePath.putBytes(byteArray).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                                progressDialog.hide();
+                                toast.setText("You updated: " + updatedProject.getName());
+                                toast.show();
+                                finish();
+                                onBackPressed();
+                            }
+                        });
+                    }else{
+                        filePath.putFile(uri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                                progressDialog.hide();
+                                toast.setText("You updated: " + updatedProject.getName());
+                                toast.show();
+                                finish();
+                                onBackPressed();
+                            }
+                        });
+                    }
                 } catch (Exception ex) {
                     progressDialog.hide();
                     toast.setText(ex.getMessage());
                     toast.show();
                 }
+
 
             } else {
                 try {
@@ -409,7 +422,6 @@ public class AddProjectActivity extends AppCompatActivity {
         }
         return true;
     }
-
 
 
 }

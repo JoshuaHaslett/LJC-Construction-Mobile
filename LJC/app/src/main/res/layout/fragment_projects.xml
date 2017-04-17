@@ -69,5 +69,19 @@
         android:layout_below="@id/filter">
     </ListView>
 
+    <TextView
+        android:id="@+id/projects_NoResults_TextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:fontFamily="serif"
+        android:text="@string/no_projects_returned"
+        android:textAlignment="center"
+        android:textColor="@color/colorGrey"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        android:layout_below="@id/filter"/>
+
     <include layout="@layout/alert_dialogue_confirmation" android:visibility="invisible" android:id="@+id/projects_DialogueContainer_RelativeLayout"/>
 </RelativeLayout>

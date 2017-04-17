@@ -9,6 +9,19 @@
         >
     </ListView>
 
+    <TextView
+        android:id="@+id/testimonials_NoResults_TextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:fontFamily="serif"
+        android:text="@string/no_testimonials_returned"
+        android:textAlignment="center"
+        android:textColor="@color/colorGrey"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:visibility="gone"/>
+
     <include layout="@layout/alert_dialogue_testimonials" android:visibility="invisible" android:id="@+id/alertDialogContainer"/>
     <include layout="@layout/alert_dialogue_confirmation" android:visibility="invisible" android:id="@+id/testimonials_DialogueContainer_RelativeLayout"/>
 

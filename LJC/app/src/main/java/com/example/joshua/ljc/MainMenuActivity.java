@@ -1,6 +1,8 @@
 package com.example.joshua.ljc;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -63,6 +65,7 @@ public class MainMenuActivity extends AppCompatActivity {
         searchImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                searchImageButton.setEnabled(false);
                 switch (tabLayout.getSelectedTabPosition()){
                     case 0:
                         projectsFragment.loadProjects(searchEditText.getText().toString());
@@ -100,8 +103,6 @@ public class MainMenuActivity extends AppCompatActivity {
                 switch (tabLayout.getSelectedTabPosition()){
                     case 0:
                         startActivity(new Intent(MainMenuActivity.this, AddProjectActivity.class));
-                        Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                                .setAction("Action", null).show();
                         break;
                     case 1:
                         testimonialsFragment.addTestimonial(null);
@@ -117,6 +118,9 @@ public class MainMenuActivity extends AppCompatActivity {
         fab.hide();
     }
 
+    public void enableSearch(){
+        searchImageButton.setEnabled(true);
+    }
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
@@ -164,5 +168,10 @@ public class MainMenuActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         mAuth.addAuthStateListener(mAuthorisationListener);
+    }
+
+    @Override
+    public void onBackPressed() {
+        mAuth.signOut();
     }
 }
